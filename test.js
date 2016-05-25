@@ -5,12 +5,14 @@ var request = require('./')
   , path = require('path')
   , assert = require('assert')
   , http = require('http')
+  , from = require('from')
 
 var tmpDir = path.join(require('os').tmpDir(), Math.random().toString(36).slice(2))
 
 describe('test', function () {
   var p = path.join(tmpDir, 'alice.jpg')
-  before(function () {
+  var baseUrl
+  before(function (done) {
     fs.mkdirSync(tmpDir)
     if (!process.env.DEBUG) {
       process.on('exit', function () {
@@ -18,6 +20,30 @@ describe('test', function () {
       })
     }
     else console.log('tmpDir', tmpDir)
+    var server = http.createServer()
+    server.on('request', function (req, res) {
+      //console.log('req', req.headers)
+      assert.equal(req.url, '/echo')
+      assert.equal(req.method, 'POST')
+      assert.equal(req.headers['content-type'], 'application/json; charset=utf-8')
+      var chunks = []
+      req.on('data', function (chunk) {
+        //console.log('chunk', chunk.length)
+        chunks.push(chunk)
+      })
+      req.once('end', function () {
+        //console.log('end')
+        var body = Buffer.concat(chunks).toString('utf8')
+        var data = JSON.parse(body)
+        res.writeHead(200, {'content-type': 'application/json'})
+        res.end(JSON.stringify(data))
+      })
+    })
+    server.listen(function () {
+      var port = server.address().port
+      baseUrl = 'http://localhost:' + port
+      done()
+    })
   })
   it('streams fixture', function (done) {
     var uri = 'https://raw.githubusercontent.com/carlos8f/node-buffet/master/test/files/folder/Alice-white-rabbit.jpg'
@@ -56,32 +82,20 @@ describe('test', function () {
     })
   })
   it('post (json)', function (done) {
-    var server = http.createServer()
-    server.on('request', function (req, res) {
-      assert.equal(req.url, '/posts')
-      assert.equal(req.method, 'POST')
-      assert.equal(req.headers['content-type'], 'application/json; charset=utf-8')
-      var chunks = []
-      req.on('data', function (chunk) {
-        chunks.push(chunk)
-      })
-      req.once('end', function () {
-        var body = Buffer.concat(chunks).toString('utf8')
-        var data = JSON.parse(body)
-        assert(data.cool)
-        res.writeHead(200, {'content-type': 'application/json'})
-        res.end('{"ok":true}')
-      })
+    var uri = baseUrl + '/echo'
+    request.post(uri, {data: {cool: true}}, function (err, resp, body) {
+      assert.ifError(err)
+      assert.equal(resp.statusCode, 200)
+      assert(body.cool)
+      done()
     })
-    server.listen(function () {
-      var port = server.address().port
-      var uri = 'http://localhost:' + port + '/posts'
-      request.post(uri, {data: {cool: true}}, function (err, resp, body) {
-        assert.ifError(err)
-        assert.equal(resp.statusCode, 200)
-        assert(body.ok)
-        done()
-      })
+  })
+  it('post (pipe)', function (done) {
+    request.post(baseUrl + '/echo', {data: from(['{"ok":true}']), headers: {'content-type': 'application/json; charset=utf-8'}}, function (err, resp, body) {
+      assert.ifError(err)
+      assert.equal(resp.statusCode, 200)
+      assert.deepEqual(body, {ok: true})
+      done()
     })
   })
 })

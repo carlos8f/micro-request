@@ -50,12 +50,14 @@ function request (uri, options, cb) {
   options.headers || (options.headers = {})
   var data
   if (options.data) {
-    if (typeof options.data === 'object') {
+    if (typeof options.data === 'object' && !options.data.pipe) {
       data = JSON.stringify(options.data)
       options.headers['content-type'] = 'application/json; charset=utf-8'
     }
     else data = options.data
-    options.headers['content-length'] || (options.headers['content-length'] = Buffer(data).length)
+    if (!data.pipe) {
+      options.headers['content-length'] || (options.headers['content-length'] = Buffer(data).length)
+    }
   }
   var req = protocols[options.protocol].request(options, function (res) {
     if (errored) return
@@ -76,9 +78,13 @@ function request (uri, options, cb) {
       var body
       var buf = Buffer.concat(chunks)
       if (res.headers['content-type'] && res.headers['content-type'].match(/^text\/|^application\/json/)) {
+        //console.log('body from buf', buf)
         body = buf.toString('utf8')
       }
-      else body = buf
+      else {
+        //console.log('body is buf', buf)
+        body = buf
+      }
       if (res.headers['content-type'] && res.headers['content-type'].match(/^(text\/json|application\/json)/)) {
         try {
           body = JSON.parse(body)
@@ -87,7 +93,9 @@ function request (uri, options, cb) {
           errored = true
           return cb(e, res, body)
         }
+        //console.log('body parsed', body)
       }
+      //console.log('body', body)
       cb(null, res, body)
     })
   })
@@ -97,11 +105,15 @@ function request (uri, options, cb) {
     errored = true
     cb(err)
   })
-  if (options.data && options.data && options.data.pipe) {
+  if (data && data.pipe) {
     // input stream
-    return options.data.pipe(req)
+    //console.log('pipe')
+    return data.pipe(req)
   }
-  if (data) req.write(data)
+  if (data) {
+    //console.log('write', data)
+    req.write(data)
+  }
   req.end()
   return req
 }
