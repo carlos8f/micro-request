@@ -1,0 +1,34 @@
+{
+  "name": "micro-request",
+  "version": "666",
+  "description": "zero-depdency http(s) client",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^2.4.5"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec --timeout 10s"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/carlos8f/micro-request.git"
+  },
+  "keywords": [
+    "request",
+    "http",
+    "https",
+    "json",
+    "client",
+    "www",
+    "web",
+    "fetch",
+    "minimalist"
+  ],
+  "author": "Carlos Rodriguez <carlos@s8f.org> (http://s8f.org/)",
+  "license": "MIT",
+  "homepage": "https://github.com/carlos8f/micro-request",
+  "bugs": {
+    "url": "https://github.com/carlos8f/micro-request/issues"
+  }
+}
