@@ -1,2 +1,2 @@
 # micro-request
-zero-depdency http(s) client
+zero-dependency http(s) client

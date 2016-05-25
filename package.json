@@ -1,7 +1,7 @@
 {
   "name": "micro-request",
   "version": "666",
-  "description": "zero-depdency http(s) client",
+  "description": "zero-dependency http(s) client",
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
