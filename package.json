@@ -1,6 +1,6 @@
 {
   "name": "micro-request",
-  "version": "666.0.2",
+  "version": "666.0.3",
   "description": "zero-dependency http(s) client with smart json and stream support",
   "main": "index.js",
   "dependencies": {},
