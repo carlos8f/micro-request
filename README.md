@@ -1,6 +1,6 @@
 # micro-request
 
-zero-dependency http(s) client
+zero-dependency http(s) client with smart json and stream support
 
 - TODO: examples and usage
 
