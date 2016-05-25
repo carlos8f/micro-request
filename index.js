@@ -101,7 +101,7 @@ function request (url, options, cb) {
     // input stream
     return options.data.pipe(req)
   }
-  
+  if (options.data) req.write(options.data)
   req.end()
   return req
 }
