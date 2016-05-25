@@ -35,18 +35,18 @@ var methods = [
   'connect'
 ]
 
-function request (url, options, cb) {
-  var parsedUrl = url.parse(url)
+function request (uri, options, cb) {
+  var parsedUri = url.parse(uri)
   if (typeof options === 'function') {
     cb = options
     options = {}
   }
   options || (options = {})
   options.method = (options.method || 'GET').toUpperCase()
-  options.protocol || (options.protocol = parsedUrl.protocol || 'http:')
-  options.hostname || (options.hostname = parsedUrl.hostname)
-  options.port || (options.port = parsedUrl.protocol === 'https:' ? 443 : 80)
-  options.path || (options.path = parsedUrl.path)
+  options.protocol || (options.protocol = parsedUri.protocol || 'http:')
+  options.hostname || (options.hostname = parsedUri.hostname)
+  options.port || (options.port = parsedUri.protocol === 'https:' ? 443 : 80)
+  options.path || (options.path = parsedUri.path)
   options.headers || (options.headers = {})
   var data
   if (options.data) {
@@ -55,12 +55,12 @@ function request (url, options, cb) {
       options.headers['content-type'] = 'application/json; charset=utf-8'
     }
     else data = options.data
+    options.headers['content-length'] || (options.headers['content-length'] = Buffer(data).length)
   }
-  options.headers['content-length'] || (options.headers['content-length'] = Buffer(data).length)
   var req = protocols[options.protocol].request(options, function (res) {
     if (errored) return
     if (options.stream) {
-      return cb(null, res)
+      return cb(null, res, res)
     }
     var chunks = []
     res.once('error', function (err) {
@@ -89,7 +89,7 @@ function request (url, options, cb) {
         }
       }
       cb(null, res, body)
-    }
+    })
   })
   var errored = false
   req.once('error', function (err) {

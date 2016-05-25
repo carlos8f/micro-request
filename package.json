@@ -1,11 +1,12 @@
 {
   "name": "micro-request",
-  "version": "666",
+  "version": "666.0.0",
   "description": "zero-dependency http(s) client",
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "rimraf": "^2.5.2"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec --timeout 10s"
