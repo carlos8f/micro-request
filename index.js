@@ -45,7 +45,7 @@ function request (uri, options, cb) {
   options.method = (options.method || 'GET').toUpperCase()
   options.protocol || (options.protocol = parsedUri.protocol || 'http:')
   options.hostname || (options.hostname = parsedUri.hostname)
-  options.port || (options.port = parsedUri.protocol === 'https:' ? 443 : 80)
+  options.port || (options.port = parsedUri.port || (parsedUri.protocol === 'https:' ? 443 : 80))
   options.path || (options.path = parsedUri.path)
   options.headers || (options.headers = {})
   var data
@@ -101,7 +101,7 @@ function request (uri, options, cb) {
     // input stream
     return options.data.pipe(req)
   }
-  if (options.data) req.write(options.data)
+  if (data) req.write(data)
   req.end()
   return req
 }
