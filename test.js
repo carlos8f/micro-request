@@ -98,4 +98,26 @@ describe('test', function () {
       done()
     })
   })
+  it('get (buffer stream)', function (done) {
+    var hashStream = require('crypto').createHash('sha1')
+    request('https://s8f.org/favicon.ico', {stream: true}, function (err, resp, body) {
+      assert.ifError(err)
+      assert.equal(resp.statusCode, 200)
+      body.pipe(hashStream)
+        .once('data', function (chunk) {
+          assert.equal(chunk.toString('hex'), 'd5348fcedb9e3287c8a787ec6d6775b22853fb73')
+          done()
+        })
+    })
+  })
+  it('get (buffer buffer)', function (done) {
+    var hashStream = require('crypto').createHash('sha1')
+    request('https://s8f.org/favicon.ico', function (err, resp, body) {
+      assert.ifError(err)
+      assert.equal(resp.statusCode, 200)
+      var hash = hashStream.update(body).digest('hex')
+      assert.equal(hash, 'd5348fcedb9e3287c8a787ec6d6775b22853fb73')
+      done()
+    })
+  })
 })
