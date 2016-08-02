@@ -49,8 +49,6 @@ function request (uri, options, cb) {
   options.port || (options.port = parsedUri.port || (parsedUri.protocol === 'https:' ? 443 : 80))
   options.path || (options.path = parsedUri.path)
   options.headers || (options.headers = {})
-  
-  console.error('uri', uri)
   var data
   if (options.data) {
     if (typeof options.data === 'object' && !options.data.pipe) {
