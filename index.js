@@ -36,19 +36,21 @@ var methods = [
 ]
 
 function request (uri, options, cb) {
-  var parsedUri = url.parse(uri)
   if (typeof options === 'function') {
     cb = options
     options = {}
   }
   options || (options = {})
+  if (options.query) uri += '?' + querystring.stringify(options.query)
+  var parsedUri = url.parse(uri)
   options.method = (options.method || 'GET').toUpperCase()
   options.protocol || (options.protocol = parsedUri.protocol || 'http:')
   options.hostname || (options.hostname = parsedUri.hostname)
   options.port || (options.port = parsedUri.port || (parsedUri.protocol === 'https:' ? 443 : 80))
   options.path || (options.path = parsedUri.path)
   options.headers || (options.headers = {})
-  if (options.query) uri += '?' + querystring.stringify(options.query)
+  
+  console.error('uri', uri)
   var data
   if (options.data) {
     if (typeof options.data === 'object' && !options.data.pipe) {
