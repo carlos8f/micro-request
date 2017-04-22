@@ -108,7 +108,7 @@ function request (uri, options, cb) {
   })
   req.once('timeout', function () {
     var err = new Error('request timeout')
-    err.code = 'ETIMEOUT'
+    err.code = 'ETIMEDOUT'
     errored = true
     cb(err)
   })

@@ -129,7 +129,7 @@ describe('test', function () {
   it('timeout', function (done) {
     request(baseUrl + '/timeout', {timeout: 5000}, function (err, resp, body) {
       assert(err)
-      assert.equal(err.code, 'ETIMEOUT')
+      assert.equal(err.code, 'ETIMEDOUT')
       done()
     })
   })
