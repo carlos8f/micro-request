@@ -106,6 +106,12 @@ function request (uri, options, cb) {
     errored = true
     cb(err)
   })
+  req.once('timeout', function () {
+    var err = new Error('request timeout')
+    err.code = 'ETIMEOUT'
+    errored = true
+    cb(err)
+  })
   if (data && data.pipe) {
     // input stream
     //console.log('pipe')

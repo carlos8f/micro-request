@@ -22,6 +22,12 @@ describe('test', function () {
     else console.log('tmpDir', tmpDir)
     var server = http.createServer()
     server.on('request', function (req, res) {
+      if (req.url === '/timeout') {
+        setTimeout(function () {
+          res.end('it\'s TIEM')
+        }, 30000)
+        return
+      }
       //console.log('req', req.headers)
       assert.equal(req.url, '/echo')
       assert.equal(req.method, 'POST')
@@ -117,6 +123,13 @@ describe('test', function () {
       assert.equal(resp.statusCode, 200)
       var hash = hashStream.update(body).digest('hex')
       assert.equal(hash, '715e795ba7d34793dc7db2b2956282afbd83e844')
+      done()
+    })
+  })
+  it('timeout', function (done) {
+    request(baseUrl + '/timeout', {timeout: 5000}, function (err, resp, body) {
+      assert(err)
+      assert.equal(err.code, 'ETIMEOUT')
       done()
     })
   })
